@@ -10,6 +10,7 @@ readme = "README.md"
 python = "^3.9"
 django = "^4.1"
 pillow = "^11.0.0"
+djangorestframework = "^3.13.1"
 
 
 [build-system]

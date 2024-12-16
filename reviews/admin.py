@@ -3,7 +3,7 @@ from .models import Review
 
 class WordFilter(admin.SimpleListFilter):
     title = "단어로 필터링하기"
-    parameter_name = "potato"
+    parameter_name = "word"
     
     def lookups(self, request_info, admin_name):
         return [
