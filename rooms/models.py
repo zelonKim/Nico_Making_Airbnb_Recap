@@ -21,7 +21,7 @@ class Room(CommonModel):
     kind = models.CharField(max_length=20, choices=RoomKindChoices.choices)
     owner = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="rooms")
     amenities = models.ManyToManyField("rooms.Amenity")
-    category= models.ForeignKey("categories.Category", on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey("categories.Category", on_delete=models.SET_NULL, null=True, blank=True)
     
     def __str__(self) -> str:
         return self.name
@@ -32,17 +32,18 @@ class Room(CommonModel):
     def rating(room):
         count = room.reviews.count()
         if count == 0:
-            return "No Reviews"
+            return 0
         else:
-            total_rating=0
+            total_rating = 0
             for review in room.reviews.all().values("rating"):
                 total_rating += review['rating']
             return round(total_rating / count, 2)
 
 
+
 class Amenity(CommonModel):
     """Amenity Definition"""
-    name=models.CharField(max_length=150)
+    name=models.CharField(max_length=150, null=True, blank=True)
     description=models.CharField(max_length=150, null=True, blank=True)
     
     def __str__(self) -> str:

@@ -31,6 +31,6 @@ class CategorySerializer(serializers.Serializer): # serializers.자료형 함수
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model=Category 
-        fields="__all__"
+        fields=("name", "kind")
         
         

@@ -1,0 +1,19 @@
+{
+  "name": "final Test House",
+  "country": "한국",
+  "city": "서울",
+  "price": 100,
+  "rooms": 2,
+  "toilets": 2,
+  "description": "마지막 테스트 집",
+  "address": "test",
+  "pet_friendly": true,
+  "category": 2,
+  "amenities": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "kind": "entire_place"
+}
