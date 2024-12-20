@@ -9,7 +9,13 @@ from rest_framework.exceptions import NotFound, NotAuthenticated, ParseError, Pe
 from rest_framework.status import HTTP_204_NO_CONTENT
 from categories.models import Category
 from django.db import transaction
-
+from reviews.serializers import ReviewSerializer
+from medias.serializers import PhotoSerializer
+from django.conf import settings
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from bookings.models import Booking
+from bookings.serializers import PublicBookingSerializer, CreateRoomBookingSerializer
+from django.utils import timezone
 
 class Amenities(APIView):
     def get(self, request):
@@ -55,13 +61,14 @@ class AmenityDetail(APIView):
 
     
 class Rooms(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
     def get(self, request):
         all_rooms = Room.objects.all()
         json_rooms = RoomListSerializer(all_rooms, many=True, context={'request': request})
         return Response(json_rooms.data)
     
     def post(self, request):
-        if request.user.is_authenticated: # 요청을 보내는 사용자가 현재 로그인되어 있을 경우,
             modelObj_rooms = RoomDetailSerializer(data=request.data)
             if modelObj_rooms.is_valid():
                 
@@ -88,13 +95,14 @@ class Rooms(APIView):
                     raise ParseError("어메니티가 존재하지 않습니다.")
             else:
                 return Response(modelObj_rooms.errors)
-        else:
-            raise NotAuthenticated
+
     
     
     
     
 class RoomDetail(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
     def get_object(self, pk):
         try:
             return Room.objects.get(pk=pk)
@@ -158,3 +166,123 @@ class RoomDetail(APIView):
             raise PermissionDenied
         room.delete()
         return Response(status=HTTP_204_NO_CONTENT)
+    
+    
+    
+class RoomReviews(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise NotFound
+    
+    def get(self, request, pk):
+        # print(request.query_params) # URL의 쿼리 파라미터 객체를 가져옴.
+        try:
+            page = request.query_params.get("page", 1) # page값이 없는 경우, page=1이 됨.
+            page = int(page)
+        except ValueError: # page값이 숫자로 변환될 수 없는 경우, page=1이 됨.
+            page = 1
+        
+        page_size = settings.PAGE_SIZE
+        start = (page - 1) * page_size
+        end = start + page_size        
+        
+        room = self.get_object(pk)
+        json_reviews = ReviewSerializer(room.reviews.all()[start:end], many=True) # 페이지네이션
+        return Response(json_reviews.data)
+    
+    
+    def post(self, request, pk):
+        modelObj_review = ReviewSerializer(data=request.data)
+        if modelObj_review.is_valid():
+            created_review = modelObj_review.save(
+                user = request.user,
+                room = self.get_object(pk)
+            )
+            return Response(ReviewSerializer(created_review).data)
+        
+    
+    
+
+class RoomAmenities(APIView):
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise NotFound
+    
+    def get(self, request, pk):
+        try:
+            page = request.query_params.get("page", 1)
+            page = int(page)
+        except ValueError:
+            page = 1
+            
+        page_size = 2
+        start = (page -1) * page_size
+        end = start + page_size
+        
+        room = self.get_object(pk)
+        json_amenities = AmenitySerializer(room.amenities.all()[start:end], many=True)
+        return Response(json_amenities.data)
+    
+    
+class RoomPhotos(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except Room.DoesNotExist:
+            raise NotFound
+    
+    
+    def post(self, request, pk):
+        room = self.get_object(pk)
+
+        if request.user != room.owner:
+            raise PermissionDenied
+        
+        modelObj_photo = PhotoSerializer(data=request.data)
+        if modelObj_photo.is_valid():
+            created_photo = modelObj_photo.save(room=room)
+            return Response(PhotoSerializer(created_photo).data)
+        else:
+            return Response(modelObj_photo.errors)
+        
+        
+
+class RoomBookings(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except:
+            raise NotFound
+    
+    def get(self, request, pk):
+        room = self.get_object(pk)
+        now = timezone.localtime(timezone.now()).date()
+        bookings = Booking.objects.filter(room=room, kind=Booking.BookingKindChoices.ROOM, check_in__gt=now,)
+        json_bookings = PublicBookingSerializer(bookings, many=True)
+        return Response(json_bookings.data)
+    
+    
+    def post(self, request, pk):
+        room = self.get_object(pk)
+        modelObj_booking = CreateRoomBookingSerializer(data=request.data)
+        if modelObj_booking.is_valid():
+            created_booking = modelObj_booking.save(
+                room = room,
+                user = request.user,
+                kind = Booking.BookingKindChoices.ROOM
+            )
+            return Response(PublicBookingSerializer(created_booking).data)
+        else:
+            return Response(modelObj_booking.errors)
+    
+    
