@@ -1,0 +1,21 @@
+{
+  "username": "nomad",
+  "email": "nico@naver.com",
+  "name": "니콜라스",
+  "gender": "male",
+  "language": "en",
+  "currency": "won",
+  "password": "1234"
+}
+
+
+{
+    "old_password":"",
+    "new_password":""
+}
+
+
+{
+    "username":"zelon",
+    "password":"tjdwls40204"
+}
