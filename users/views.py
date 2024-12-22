@@ -6,7 +6,8 @@ from rest_framework.exceptions import ParseError, NotFound
 from . import serializers
 from .models import User
 from django.contrib.auth import authenticate, login, logout
-
+import jwt
+from django.conf import settings
 
 class Me(APIView):
     permission_classes = [IsAuthenticated]
@@ -95,3 +96,19 @@ class LogOut(APIView):
     def post(self, request):
         logout(request)
         return Response({"ok":"bye"})
+    
+    
+class JWTLogIn(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        if not username or not password:
+            raise ParseError
+        
+        user_data = authenticate(request, username=username, password=password)
+        
+        if user_data:
+            token = jwt.encode({"pk":user_data.pk}, settings.SECRET_KEY, algorithm="HS256") # 사용자 데이터를 암호화하여 토큰을 생성함.
+            return Response({"token": token})
+        else:
+            return Response({"error": "wrong password"})

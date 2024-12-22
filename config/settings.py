@@ -11,16 +11,25 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+SECRET_KEY = env("SECRET_KEY")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-zerqub_ka@ae3js-30+=l=*+3%ok0u$3v5cl%xkl0x6!-(fo8-"
+
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -30,10 +39,6 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-THIRD_PARTY_APPS = [
-    "rest_framework",
-    "strawberry.django",
-]
 
 
 CUSTOM_APPS = [
@@ -58,7 +63,6 @@ SYSTEM_APPS = [
     "django.contrib.staticfiles",
 ]
 
-INSTALLED_APPS = SYSTEM_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
 
 
 MIDDLEWARE = [
@@ -155,3 +159,24 @@ MEDIA_URL = "user-uploads/"
 MEDIA_ROOT = "uploads" 
 
 PAGE_SIZE = 3
+
+
+
+
+THIRD_PARTY_APPS = [
+    "rest_framework",
+    "strawberry.django",
+    "rest_framework.authtoken" # 토큰 인증 
+]
+
+INSTALLED_APPS = SYSTEM_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [ 
+        "rest_framework.authentication.SessionAuthentication", # 세션 및 쿠키 인증 (기본값)
+        "config.authentication.TrustMeBroAuthentication",  # 커스텀 인증
+        "rest_framework.authentication.TokenAuthentication", # 토큰 인증 -> 헤더에 키로 'Authorization'과 밸류로 'Token 토큰값'을 GET요청 해주면 사용자를 인증해줌. 
+        "config.authentication.JWTAuthentication" # JWT 인증 -> 헤더에 키로 'Jwt'와 밸류로 '토큰값'을 GET요청 해주면 사용자를 인증해줌.
+    ] 
+}
