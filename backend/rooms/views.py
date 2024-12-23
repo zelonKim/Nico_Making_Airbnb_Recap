@@ -6,7 +6,7 @@ from .models import Amenity, Room
 from .serializers import AmenitySerializer, RoomListSerializer, RoomDetailSerializer
 from rest_framework.response import Response
 from rest_framework.exceptions import NotFound, NotAuthenticated, ParseError, PermissionDenied
-from rest_framework.status import HTTP_204_NO_CONTENT
+from rest_framework.status import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from categories.models import Category
 from django.db import transaction
 from reviews.serializers import ReviewSerializer
@@ -29,7 +29,7 @@ class Amenities(APIView):
             created_amenity = modelObj_amenity.save()
             return Response(AmenitySerializer(created_amenity).data)
         else:
-            return Response(modelObj_amenity.errors)
+            return Response(modelObj_amenity.errors, status=HTTP_400_BAD_REQUEST)
 
 
 
