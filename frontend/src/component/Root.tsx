@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ChakraProvider,
   Divider,
   HStack,
   IconButton,
@@ -21,12 +22,15 @@ import {
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./Header.tsx";
+import theme from "../theme.ts";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export default function Root() {
   return (
     <Box>
       <Header />
       <Outlet />
+      <ReactQueryDevtools />
     </Box>
   );
 }

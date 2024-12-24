@@ -73,6 +73,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware"
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -166,7 +167,8 @@ PAGE_SIZE = 3
 THIRD_PARTY_APPS = [
     "rest_framework",
     "strawberry.django",
-    "rest_framework.authtoken" # 토큰 인증 
+    "rest_framework.authtoken", # 토큰 인증 
+    "corsheaders", 
 ]
 
 INSTALLED_APPS = SYSTEM_APPS + THIRD_PARTY_APPS + CUSTOM_APPS
@@ -180,3 +182,5 @@ REST_FRAMEWORK = {
         "config.authentication.JWTAuthentication" # JWT 인증 -> 헤더에 키로 'Jwt'와 밸류로 '토큰값'을 GET요청 해주면 사용자를 인증해줌.
     ] 
 }
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000"] 
