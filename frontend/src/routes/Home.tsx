@@ -17,7 +17,7 @@ import RoomSkeleton from "../component/RoomSkeleton.tsx";
 import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../api.ts";
 import { Link } from "react-router-dom";
-import { IRoomList } from "../types.ts";
+import { IRoomList } from "../../types";
 
 export default function Home() {
   // const [isLoading, setIsLoading] = useState(true);
@@ -34,7 +34,9 @@ export default function Home() {
   //   fetchRooms();
   // }, []);
 
-  const { isLoading, data } = useQuery<IRoomList[]>(["rooms"], getRooms);
+  const response = useQuery<IRoomList[]>(["rooms"], getRooms);
+
+  console.log(response);
 
   return (
     <Grid
@@ -53,7 +55,7 @@ export default function Home() {
         "2xl": "repeat(5, 1fr)",
       }}
     >
-      {isLoading ? (
+      {response.isLoading ? (
         <>
           <RoomSkeleton />
           <RoomSkeleton />
@@ -66,7 +68,7 @@ export default function Home() {
         </>
       ) : null}
 
-      {data?.map((room) => (
+      {response.data?.map((room) => (
         <Room
           key={room.pk}
           pk={room.pk}

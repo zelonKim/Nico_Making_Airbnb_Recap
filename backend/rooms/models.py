@@ -21,7 +21,7 @@ class Room(CommonModel):
     kind = models.CharField(max_length=20, choices=RoomKindChoices.choices)
     owner = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name="rooms")
     amenities = models.ManyToManyField("rooms.Amenity", related_name="rooms")
-    category = models.ForeignKey("categories.Category", on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey("categories.Category", on_delete=models.SET_NULL, null=True, blank=True,  related_name="rooms")
     
 
     def __str__(self) -> str:

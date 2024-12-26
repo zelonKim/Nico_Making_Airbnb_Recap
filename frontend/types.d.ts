@@ -1,4 +1,4 @@
-export interface IRoomPhotoPhoto {
+export interface IPhoto {
   pk: string;
   file: string;
   description: string;
@@ -12,7 +12,7 @@ export interface IRoomList {
   price: number;
   rating: number;
   is_owner: boolean;
-  photos: IRoomPhotoPhoto[];
+  photos: IPhoto[];
 }
 
 export interface IRoomOwner {
@@ -43,4 +43,10 @@ export interface IRoomDetail extends IRoomList {
   };
   owner: IRoomOwner;
   amenities: IAmenity[];
+}
+
+export interface IReview {
+  payload: string;
+  rating: number;
+  user: IRoomOwner;
 }
