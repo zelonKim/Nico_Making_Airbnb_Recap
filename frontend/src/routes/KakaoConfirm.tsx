@@ -1,10 +1,10 @@
 import { Heading, Spinner, Text, VStack, useToast } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { githubLogIn } from "../api.ts";
+import { kakaoLogIn } from "../api.ts";
 import { useQueryClient } from "@tanstack/react-query";
 
-export default function GithubConfirm() {
+export default function KakaoConfirm() {
   const { search } = useLocation();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -15,12 +15,12 @@ export default function GithubConfirm() {
     const code = params.get("code");
 
     if (code) {
-      const status = await githubLogIn(code);
+      const status = await kakaoLogIn(code);
       if (status === 200) {
         toast({
           status: "success",
           title: "환영합니다",
-          description: "깃허브로 로그인 하였습니다.",
+          description: "카카오톡으로 로그인 하였습니다.",
           position: "bottom-right",
         });
         queryClient.refetchQueries(["me"]);

@@ -5,6 +5,8 @@ import Home from "./routes/Home.tsx";
 import NotFound from "./routes/NotFound.tsx";
 import RoomDetail from "./routes/RoomDetail.tsx";
 import GithubConfirm from "./routes/GithubConfirm.tsx";
+import KakaoConfirm from "./routes/KakaoConfirm.tsx";
+import UploadRoom from "./routes/UploadRoom.tsx";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +19,10 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
+        path: "rooms/upload",
+        element: <UploadRoom />
+      },
+      {
         path: "rooms/:roomPk",
         element: <RoomDetail />,
       },
@@ -26,6 +32,10 @@ const router = createBrowserRouter([
           {
             path: "github",
             element: <GithubConfirm />,
+          },
+          {
+            path: "kakao",
+            element: <KakaoConfirm />,
           },
         ],
       },

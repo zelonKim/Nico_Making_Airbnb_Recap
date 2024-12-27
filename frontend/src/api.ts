@@ -42,7 +42,78 @@ export const githubLogIn = (code: string) =>
   axiosInstance
     .post(
       `/users/github`,
+      { code }, // request.data에 담아 백엔드로 보냄.
+      { headers: { "X-CSRFToken": Cookie.get("csrftoken") || "" } }
+    )
+    .then((response) => response.status);
+
+export const kakaoLogIn = (code: string) =>
+  axiosInstance
+    .post(
+      `/users/kakao`,
       { code },
       { headers: { "X-CSRFToken": Cookie.get("csrftoken") || "" } }
     )
     .then((response) => response.status);
+
+export interface IUsernameLoginVariables {
+  username: string;
+  password: string;
+}
+
+export interface IUsernameLoginSuccess {
+  username: string;
+}
+
+export interface IUsernameLoginError {
+  error: string;
+}
+
+////////////
+
+export interface ISignUpVariables {
+  name: string;
+  email: string;
+  username: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+export interface ISignUpSuccess {
+  name: string;
+}
+
+export interface ISignUpError {
+  error: string;
+}
+
+////////////
+
+export const usernameLogIn = ({
+  username,
+  password,
+}: IUsernameLoginVariables) =>
+  axiosInstance
+    .post(
+      `/users/log-in`,
+      { username, password },
+      { headers: { "X-CSRFToken": Cookie.get("csrftoken") || "" } }
+    )
+    .then((response) => response.data);
+
+
+
+export const userSignUp = ({
+  name,
+  email,
+  username,
+  password,
+  passwordConfirm,
+}: ISignUpVariables) =>
+  axiosInstance
+    .post(
+      `/users/sign-up`,
+      { name, email, username, password, passwordConfirm },
+      { headers: { "X-CSRFToken": Cookie.get("csrftoken") || "" } }
+    )
+    .then((response) => response.data);

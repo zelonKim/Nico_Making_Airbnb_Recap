@@ -11,6 +11,7 @@ import {
   MenuItem,
   MenuList,
   Stack,
+  ToastId,
   useColorMode,
   useColorModeValue,
   useDisclosure,
@@ -18,12 +19,12 @@ import {
 } from "@chakra-ui/react";
 import { FaAirbnb, FaMoon, FaSun } from "react-icons/fa";
 import LoginModal from "./LoginModal.tsx";
-import React from "react";
+import React, { useRef } from "react";
 import SignUpModal from "./SignUpModal.tsx";
 import { Link } from "react-router-dom";
 import useUser from "../lib/useUser.ts";
 import { logOut } from "../api.ts";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function Header() {
   const { userLoading, isLoggedIn, user } = useUser();
@@ -46,25 +47,32 @@ export default function Header() {
 
   const toast = useToast(); // 토스트를 사용할 수 있도록 해줌.
 
-  const onLogOut = async () => {
-    const toastId = toast({
-      title: "로그아웃 중",
-      description: "잠시만 기다려주세요.",
-      status: "loading",
-      position: "bottom-right",
-    });
+  const toastId = useRef<ToastId>();
 
-    await logOut();
-
-    queryClient.refetchQueries(["me"]);
-
-    setTimeout(() => {
-      toast.update(toastId, {
-        title: "로그아웃 완료",
-        description: "다음에 또 뵈요.",
-        status: "success",
+  const mutation = useMutation(logOut, {
+    onMutate: () => {
+      toastId.current = toast({
+        title: "로그아웃 중",
+        description: "잠시만 기다려주세요",
+        status: "loading",
+        position: "bottom-right",
       });
-    }, 1000);
+    },
+    onSuccess: () => {
+      if (toastId.current) {
+        queryClient.refetchQueries(["me"]);
+        toast.update(toastId.current, {
+          title: "로그아웃 됨.",
+          description: "다음에 또 만나요 😘",
+          status: "success",
+          duration: 2000,
+        });
+      }
+    },
+  });
+
+  const onLogOut = async () => {
+    mutation.mutate();
   };
 
   return (
@@ -111,8 +119,12 @@ export default function Header() {
                 <Avatar name={user.name} src={user.avatar} size={"md"} />
               </MenuButton>
               <MenuList>
+                {user?.is_host ? (
+                  <Link to="/rooms/upload">
+                    <MenuItem>방 올리기</MenuItem>
+                  </Link>
+                ) : null}
                 <MenuItem onClick={onLogOut}>로그아웃</MenuItem>
-                <MenuItem>설정</MenuItem>
               </MenuList>
             </Menu>
           )

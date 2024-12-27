@@ -85,10 +85,45 @@ class LogIn(APIView):
         user_data = authenticate(request, username=username, password=password)
         if user_data:
             login(request, user_data)
-            return Response({"ok": "welcome"})
+            return Response({"username": username})
         else:
-            return Response({"error": "wrong password"})
+            raise ParseError({"error": "wrong input"})
         
+        
+class SignUp(APIView):
+    def post(self, request):
+        try:
+            name = request.data.get('name')
+            email = request.data.get('email')
+            username = request.data.get('username')
+            password = request.data.get('password')
+            passwordConfirm = request.data.get('passwordConfirm')
+            
+            if User.objects.filter(username=username):
+                return Response({"error": "the username is already using"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            
+            if User.objects.filter(email=email):
+                return Response({"error": "the email is already using"},
+                                status=status.HTTP_400_BAD_REQUEST)
+            
+            if password == passwordConfirm:
+                user = User.objects.create(
+                        name = name,
+                        email = email,
+                        username = username,
+                    )
+                user.set_password(password)
+                user.save()
+                login(request, user)
+                return Response({"name": name}, status=status.HTTP_200_OK)
+            else:
+                raise ParseError({"error": "different password"})   
+                   
+        except Exception as e:
+            return Response({"error": f"error occurred by{e}"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            
             
             
 class LogOut(APIView):
@@ -117,10 +152,92 @@ class JWTLogIn(APIView):
         
 class GithubLogIn(APIView):
     def post(self, request):
-        code = request.data.get('code')        
-        access_token = requests.post(f"https://github.com/login/oauth/access_token?code={code}&client_id=Ov23liY52Cb1u41vJTkU&client_secret={settings.GH_SECRET}", headers={"Accept":"application/json"})
-        access_token = access_token.json().get("access_token")
-        user_data = requests.get("https://api.github.com/user", headers={"Authorization": f"Bearer {access_token}", "Accept":"application/json"})
-        user_data = user_data.json()
-        print(user_data)
-  
+        try:
+            code = request.data.get('code')        
+            
+            access_token = requests.post(f"https://github.com/login/oauth/access_token?code={code}&client_id=Ov23liY52Cb1u41vJTkU&client_secret={settings.GH_SECRET}", headers={"Accept":"application/json"})
+            access_token = access_token.json().get("access_token")
+            
+            user_data = requests.get("https://api.github.com/user", headers={"Authorization": f"Bearer {access_token}", "Accept":"application/json"})
+            user_data = user_data.json()
+            
+            user_emails = requests.get("https://api.github.com/user/emails", headers={"Authorization": f"Bearer {access_token}", "Accept":"application/json"})
+            user_emails = user_emails.json()
+            
+            try:
+                user = User.objects.get(email=user_emails[0]['email'])
+                login(request, user)
+                return Response(status=status.HTTP_200_OK)
+            
+            except User.DoesNotExist:
+                user = User.objects.create(
+                    username = user_data.get('login'),
+                    email = user_emails[0]['email'],
+                    name = user_data.get('name'),
+                    avatar = user_data.get('avatar_url')
+                )
+                user.set_unusable_password()
+                user.save()
+                login(request, user)
+                
+            return Response(status=status.HTTP_200_OK)
+        
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    
+    
+    
+class KakaoLogIn(APIView):
+    def post(self, request):
+        try:
+            code = request.data.get('code')
+            
+            access_token = requests.post("https://kauth.kakao.com/oauth/token",
+                    headers = {
+                        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
+                    },
+                    data = {
+                        "grant_type": "authorization_code",
+                        "client_id": "3ecaaf42787d2ed2f6b6ce2ad7b144ca",
+                        "redirect_uri":"http://127.0.0.1:3000/social/kakao",
+                        "code": code,
+                        "client_secret": "zQIvo1UmRkGCylvi0Sp2ak0ORWzFgmG8"
+                    }
+                )
+            
+            access_token = access_token.json().get('access_token')
+        
+            user_data = requests.get("https://kapi.kakao.com/v2/user/me", 
+                    headers = {
+                        "Authorization": f"Bearer ${access_token}",
+                        "Content-type": "application/x-www-form-urlencoded;charset=utf-8"
+                    }
+                )
+            user_data = user_data.json()
+            kakao_account = user_data.get("kakao_account")
+            profile = kakao_account.get("profile")       
+        
+            try:
+                user = User.objects.get(name=profile.get('nickname'))
+                login(request, user)
+                return Response(status=status.HTTP_200_OK)
+            
+            except User.DoesNotExist:
+                user = User.objects.create(
+                    username = profile.get('nickname'),
+                    name = profile.get('nickname'),
+                    avatar = profile.get('profile_image_url'),
+                )
+                user.set_unusable_password()
+                user.save()
+                login(request, user)
+                return Response(status=status.HTTP_200_OK)
+            
+        except Exception:
+           return Response(status=status.HTTP_400_BAD_REQUEST)
+       
+       
+       
+
+    
