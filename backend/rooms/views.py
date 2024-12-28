@@ -89,9 +89,10 @@ class Rooms(APIView):
                         for amenity_pk in amenities_pk:
                             amenity = Amenity.objects.get(pk=amenity_pk)
                             created_rooms.amenities.add(amenity)
-                    
-                        return Response(RoomDetailSerializer(created_rooms).data)
-                except Exception:
+                        serializer = RoomDetailSerializer(created_rooms, context={'request': request})
+                        return Response(serializer.data)
+                except Exception as e:
+                    print(e)
                     raise ParseError("어메니티가 존재하지 않습니다.")
             else:
                 return Response(modelObj_rooms.errors)

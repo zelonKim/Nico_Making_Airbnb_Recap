@@ -101,8 +101,6 @@ export const usernameLogIn = ({
     )
     .then((response) => response.data);
 
-
-
 export const userSignUp = ({
   name,
   email,
@@ -117,3 +115,92 @@ export const userSignUp = ({
       { headers: { "X-CSRFToken": Cookie.get("csrftoken") || "" } }
     )
     .then((response) => response.data);
+
+export const getAmenities = () =>
+  axiosInstance.get(`rooms/amenities`).then((response) => response.data);
+
+export const getCategories = () =>
+  axiosInstance.get(`categories/`).then((response) => response.data);
+
+export interface IUploadRoomVariables {
+  name: string;
+  country: string;
+  city: string;
+  price: number;
+  rooms: number;
+  toilets: number;
+  description: string;
+  address: string;
+  pet_friendly: boolean;
+  kind: string;
+  amenities: number[];
+  category: number;
+}
+
+export const uploadRoom = (variables: IUploadRoomVariables) =>
+  axiosInstance
+    .post(`rooms/`, variables, {
+      headers: { "X-CSRFToken": Cookie.get("csrftoken") || "" },
+    })
+    .then((response) => response.data);
+
+/////////////////
+
+export const getUploadURL = () =>
+  axiosInstance
+    .post(`medias/photos/get-url`, null, {
+      headers: { "X-CSRFToken": Cookie.get("csrftoken") || "" },
+    }) // 클라우드 플레어의 업로드할 URL을 얻어옴.
+    .then((response) => response.data);
+
+/////////////////////
+
+export interface IUploadImageVariables {
+  file: FileList;
+  uploadURL: string;
+}
+
+export const uploadImage = ({ file, uploadURL }: IUploadImageVariables) => {
+  const form = new FormData();
+  form.append("file", file[0]);
+
+  return axios
+    .post(uploadURL, form, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      }, // 해당 URL로 이미지 파일을 업로드함.
+    })
+    .then((response) => response.data);
+};
+
+/////////////////////
+
+export interface ICreatePhotoVariables {
+  description: string;
+  file: string;
+  roomPk: string;
+}
+
+export const createPhoto = ({
+  description,
+  file,
+  roomPk,
+}: ICreatePhotoVariables) =>
+  axiosInstance
+    .post(
+      `rooms/${roomPk}/photos`,
+      {
+        file,
+        description,
+      },
+      {
+        headers: {
+          "X-CSRFToken": Cookie.get("csrftoken") || "",
+        },
+      }
+    ) // 장고 서버에 해당 이미지를 저장함.
+    .then((response) => response.data);
+
+//////////////////
+
+

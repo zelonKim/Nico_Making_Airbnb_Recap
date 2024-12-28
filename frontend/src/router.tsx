@@ -7,6 +7,8 @@ import RoomDetail from "./routes/RoomDetail.tsx";
 import GithubConfirm from "./routes/GithubConfirm.tsx";
 import KakaoConfirm from "./routes/KakaoConfirm.tsx";
 import UploadRoom from "./routes/UploadRoom.tsx";
+import UploadPhotos from "./routes/UploadPhotos.tsx";
+import RemoveRoom from "./routes/RemoveRoom.tsx";
 
 const router = createBrowserRouter([
   {
@@ -20,11 +22,19 @@ const router = createBrowserRouter([
       },
       {
         path: "rooms/upload",
-        element: <UploadRoom />
+        element: <UploadRoom />,
+      },
+      {
+        path: "rooms/remove",
+        element: <RemoveRoom />,
       },
       {
         path: "rooms/:roomPk",
         element: <RoomDetail />,
+      },
+      {
+        path: "rooms/:roomPk/photos",
+        element: <UploadPhotos />,
       },
       {
         path: "social",
