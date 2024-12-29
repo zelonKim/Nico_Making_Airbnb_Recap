@@ -158,7 +158,6 @@ class RoomDetail(APIView):
             return Response(update_room.errors)
                 
                         
-
     def delete(self, request, pk):
         room = self.get_object(pk)
         if not request.user.is_authenticated: # 사용자가 로그인하지 않았을 경우,
@@ -204,7 +203,7 @@ class RoomReviews(APIView):
                 room = self.get_object(pk)
             )
             return Response(ReviewSerializer(created_review).data)
-        
+       
     
     
 
@@ -275,7 +274,7 @@ class RoomBookings(APIView):
     
     def post(self, request, pk):
         room = self.get_object(pk)
-        modelObj_booking = CreateRoomBookingSerializer(data=request.data)
+        modelObj_booking = CreateRoomBookingSerializer(data=request.data, context={"room":room})
         if modelObj_booking.is_valid():
             created_booking = modelObj_booking.save(
                 room = room,
@@ -287,3 +286,26 @@ class RoomBookings(APIView):
             return Response(modelObj_booking.errors)
     
     
+    
+class RoomBookingCheck(APIView):
+    def get_object(self, pk):
+        try:
+            return Room.objects.get(pk=pk)
+        except:
+            raise NotFound
+        
+
+    def get(self, request, pk):
+        room = self.get_object(pk)
+        check_out = request.query_params.get('check_out')
+        check_in = request.query_params.get('check_in')
+        
+        exists = Booking.objects.filter(
+            room = room,
+            check_in__lte = check_out,
+            check_out__gte = check_in,
+        ).exists()
+        
+        if exists:
+            return Response({'ok':False})
+        return Response({'ok':True})

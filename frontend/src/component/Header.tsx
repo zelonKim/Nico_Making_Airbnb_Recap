@@ -11,6 +11,7 @@ import {
   MenuItem,
   MenuList,
   Stack,
+  Text,
   ToastId,
   useColorMode,
   useColorModeValue,
@@ -21,7 +22,7 @@ import { FaAirbnb, FaMoon, FaSun } from "react-icons/fa";
 import LoginModal from "./LoginModal.tsx";
 import React, { useRef } from "react";
 import SignUpModal from "./SignUpModal.tsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useUser from "../lib/useUser.ts";
 import { logOut } from "../api.ts";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -46,6 +47,8 @@ export default function Header() {
   const Icon = useColorModeValue(FaMoon, FaSun);
 
   const toast = useToast(); // 토스트를 사용할 수 있도록 해줌.
+
+  const navigate = useNavigate();
 
   const toastId = useRef<ToastId>();
 
@@ -75,6 +78,10 @@ export default function Header() {
     mutation.mutate();
   };
 
+  const onSetting = () => {
+    navigate("/users/me");
+  };
+
   return (
     <Stack
       justifyContent={"space-between"}
@@ -94,8 +101,12 @@ export default function Header() {
       <Link to={"/"}>
         <Box color={logoColor}>
           <FaAirbnb size={"48"} />
+          <Text fontStyle={"normal"} fontWeight={"bold"}>
+            Airbnb
+          </Text>
         </Box>
       </Link>
+
       <HStack spacing={2}>
         <IconButton
           onClick={toggleColorMode}
@@ -115,6 +126,9 @@ export default function Header() {
             </>
           ) : (
             <Menu>
+              <Text noOfLines={8}>
+                {user.name}님, 어떤 방을 찾고 계신가요?{" "}
+              </Text>
               <MenuButton>
                 <Avatar name={user.name} src={user.avatar} size={"md"} />
               </MenuButton>
@@ -129,6 +143,7 @@ export default function Header() {
                     </Link>
                   </>
                 ) : null}
+                <MenuItem onClick={onSetting}>프로필 변경</MenuItem>
                 <MenuItem onClick={onLogOut}>로그아웃</MenuItem>
               </MenuList>
             </Menu>

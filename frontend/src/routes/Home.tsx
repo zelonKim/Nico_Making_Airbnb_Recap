@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../api.ts";
 import { Link } from "react-router-dom";
 import { IRoomList } from "../../types";
+import { Helmet } from "react-helmet";
 
 export default function Home() {
   // const [isLoading, setIsLoading] = useState(true);
@@ -55,6 +56,9 @@ export default function Home() {
         "2xl": "repeat(5, 1fr)",
       }}
     >
+      <Helmet>
+        <title>Airbnb</title>
+      </Helmet>
       {response.isLoading ? (
         <>
           <RoomSkeleton />

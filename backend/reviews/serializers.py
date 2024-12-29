@@ -8,4 +8,4 @@ class ReviewSerializer(ModelSerializer):
     
     class Meta:
         model = Review
-        fields = ("user", "payload", "rating")
+        fields = ("user", "payload", "rating", "room")

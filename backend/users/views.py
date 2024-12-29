@@ -1,14 +1,18 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.exceptions import ParseError, NotFound
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.exceptions import NotFound, NotAuthenticated, ParseError, PermissionDenied
+
 from . import serializers
 from .models import User
 from django.contrib.auth import authenticate, login, logout
 import jwt
 from django.conf import settings
 import requests
+from .serializers import ProfileUserSerializer
+from medias.serializers import PhotoSerializer
+
 
 class Me(APIView):
     permission_classes = [IsAuthenticated]
@@ -72,6 +76,32 @@ class ChangePassword(APIView):
             return Response(status=status.HTTP_200_OK)
         else:
             raise ParseError
+
+
+
+class ChangeProfile(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request):
+        user = request.user
+        new_avatar = request.data.get('avatar')
+        new_name = request.data.get('name')
+        old_password = request.data.get('oldPassword')
+        new_password = request.data.get('newPassword')
+        new_email = request.data.get('email')
+        
+        if user.check_password(old_password):
+            user.avatar = new_avatar
+            user.name = new_name
+            user.email = new_email
+            user.set_password(new_password)
+            user.save()
+            login(request, user)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            raise ParseError
+        
         
         
         
@@ -237,7 +267,4 @@ class KakaoLogIn(APIView):
         except Exception:
            return Response(status=status.HTTP_400_BAD_REQUEST)
        
-       
-       
-
-    
+     

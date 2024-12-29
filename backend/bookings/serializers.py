@@ -23,9 +23,11 @@ class CreateRoomBookingSerializer(serializers.ModelSerializer):
         return value
         
     def validate(self, dict):
+        room = self.context.get("room")
         if dict['check_out'] <= dict['check_in']:
             raise serializers.ValidationError("Check-in must be earlier than Check-out")
         if Booking.objects.filter(
+            room=room,
             check_in__lte=dict['check_out'],
             check_out__gte=dict['check_in']
             ).exists():

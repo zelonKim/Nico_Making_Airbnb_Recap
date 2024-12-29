@@ -27,34 +27,27 @@ import {
   getAmenities,
   getCategories,
   getRooms,
+  removeRoom,
   uploadRoom,
 } from "../api.ts";
 import { IAmenity, ICategory, IRoomDetail, IRoomList } from "../../types.ts";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
+export interface IRemoveRoomVariables {
+  name: string;
+}
+
 export default function RemoveRoom() {
-  const { register, watch, handleSubmit } = useForm<IUploadRoomVariables>();
+  const { register, watch, handleSubmit } = useForm<IRemoveRoomVariables>();
 
   const { data, isLoading } = useQuery<IRoomList[]>(["rooms"], getRooms);
 
-  const toast = useToast();
   const navigate = useNavigate();
 
-  //   const mutation = useMutation(removeRoom, {
-  //     onSuccess: (data: IRoomDetail) => {
-  //       toast({
-  //         title: "방이 삭제 되었습니다.",
-  //         status: "success",
-  //         position: "bottom-right",
-  //       });
-  //       navigate(`/`);
-  //     },
-  //   });
-
-  // const onSubmit = (data: IUploadRoomVariables) => {
-  //   mutation.mutate(data);
-  // };
+  const onSubmit = ({ name }) => {
+    navigate(`${name}`);
+  };
 
   return (
     <ProtectedPage>
@@ -73,7 +66,7 @@ export default function RemoveRoom() {
               spacing={10}
               mt={5}
               as="form"
-              //   onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(onSubmit)}
             >
               <FormControl>
                 <FormLabel>삭제할 방</FormLabel>
@@ -90,17 +83,7 @@ export default function RemoveRoom() {
                 <FormHelperText>어떤 방을 삭제하실건가요?</FormHelperText>
               </FormControl>
 
-              {/* {mutation.isError ? (
-                <Text color="red.400">삭제할 방을 선택해주세요</Text>
-              ) : null} */}
-
-              <Button
-                type="submit"
-                // isLoading={mutation.isLoading}
-                colorScheme={"red"}
-                size="lg"
-                w="100%"
-              >
+              <Button type="submit" colorScheme={"red"} size="lg" w="100%">
                 방 지우기
               </Button>
             </VStack>

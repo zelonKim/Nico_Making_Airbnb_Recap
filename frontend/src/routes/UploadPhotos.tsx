@@ -1,6 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ProtectedPage from "../component/ProtectedPage.tsx";
 import {
   Box,
@@ -32,6 +32,8 @@ export default function UploadPhotos() {
 
   const toast = useToast();
 
+  const navigate = useNavigate();
+
   const createPhotoMutation = useMutation(createPhoto, {
     onSuccess: () => {
       toast({
@@ -41,6 +43,16 @@ export default function UploadPhotos() {
         isClosable: true,
       });
       reset();
+    },
+    onError: () => {
+      toast({
+        status: "error",
+        title: "방의 소유자만 업로드할 수 있습니다.",
+        duration: 2000,
+        isClosable: true,
+      });
+      reset();
+      navigate("/");
     },
   });
 

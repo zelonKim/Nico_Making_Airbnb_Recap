@@ -4,8 +4,11 @@ import {
   QueryKey,
 } from "@tanstack/react-query";
 import axios from "axios";
-import { IRoomDetail } from "../types";
+import { IReview } from "../types.ts";
 import Cookie from "js-cookie";
+import { IRemoveRoomVariables } from "./routes/RemoveRoom";
+import { IRemoveRoomDetailVariables } from "./routes/RemoveRoomDetail";
+import { formatDate } from "./lib/utils.ts";
 
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000/api/v1/",
@@ -144,6 +147,19 @@ export const uploadRoom = (variables: IUploadRoomVariables) =>
     })
     .then((response) => response.data);
 
+////////////
+
+export const uploadReview = ({ roomPk, user, payload, rating }: IReview) =>
+  axiosInstance
+    .post(
+      `rooms/${roomPk}/reviews`,
+      { user, payload, rating },
+      {
+        headers: { "X-CSRFToken": Cookie.get("csrftoken") || "" },
+      }
+    )
+    .then((response) => response.data);
+
 /////////////////
 
 export const getUploadURL = () =>
@@ -203,4 +219,69 @@ export const createPhoto = ({
 
 //////////////////
 
+export interface IProfileVariables {
+  avatar: string;
+  name: string;
+  oldPassword: string;
+  newPassword: string;
+  email: string;
+}
 
+export const changeProfile = ({
+  avatar,
+  name,
+  oldPassword,
+  newPassword,
+  email,
+}: IProfileVariables) =>
+  axiosInstance
+    .put(
+      `users/change-profile`,
+      {
+        avatar,
+        name,
+        oldPassword,
+        newPassword,
+        email,
+      },
+      {
+        headers: {
+          "X-CSRFToken": Cookie.get("csrftoken") || "",
+        },
+      }
+    )
+    .then((response) => response.data);
+
+//////////////////
+
+export const removeRoom = (roomPk: string) =>
+  axiosInstance
+    .delete(`rooms/${roomPk}`, {
+      headers: {
+        "X-CSRFToken": Cookie.get("csrftoken") || "",
+      },
+    })
+    .then((response) => response.data);
+
+////////////////
+
+type CheckBookingQueryKey = [string, string?, Date[]?];
+
+export const checkBooking = ({
+  queryKey,
+}: QueryFunctionContext<CheckBookingQueryKey>) => {
+  const [_, roomPk, dates] = queryKey;
+  if (dates) {
+    const [firstDate, secondDate] = dates;
+
+    const checkIn = formatDate(firstDate);
+
+    const checkOut = formatDate(secondDate);
+
+    return axiosInstance
+      .get(
+        `rooms/${roomPk}/bookings/check?check_in=${checkIn}&check_out=${checkOut}`
+      )
+      .then((response) => response.data);
+  }
+};

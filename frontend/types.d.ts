@@ -33,7 +33,6 @@ export interface ICategory {
   kind: string;
 }
 
-
 export interface IRoomDetail extends IRoomList {
   id: number;
   created_at: string;
@@ -52,6 +51,7 @@ export interface IRoomDetail extends IRoomList {
 }
 
 export interface IReview {
+  roomPk: string;
   payload: string;
   rating: number;
   user: IRoomOwner;
