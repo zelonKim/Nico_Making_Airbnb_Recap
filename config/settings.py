@@ -218,6 +218,9 @@ CF_TOKEN=env("CF_TOKEN")
 
 
 if not DEBUG:
+    SESSION_COOKIE_DOMAIN = ".airbnbzelon.xyz"
+    CSRF_COOKIE_DOMAIN = ".airbnbzelon.xyz"
+    
     sentry_sdk.init(
     dsn="https://bd4801c58db1988941c4b4d58bde64c7@o4508555082727424.ingest.us.sentry.io/4508555088101376",
     traces_sample_rate=1.0,
