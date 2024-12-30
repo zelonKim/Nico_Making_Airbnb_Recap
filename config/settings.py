@@ -39,6 +39,7 @@ DEBUG = "RENDER" not in os.environ
 
 ALLOWED_HOSTS = [
     "localhost",
+    "127.0.0.1",
     "backend.airbnbzelon.xyz",
 ]
 
@@ -120,7 +121,7 @@ if DEBUG:
     }
 else:
     DATABASES = {
-        'default': dj_database_url.config(
+        "default": dj_database_url.config(
             conn_max_age=600,
         )
     }
@@ -206,8 +207,8 @@ REST_FRAMEWORK = {
 }
 
 if DEBUG:
-    CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000"] 
-    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000"]  
+    CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"] 
+    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://localhost:3000"]  
 else:
     CORS_ALLOWED_ORIGINS = ["https://airbnbzelon.xyz"] 
     CSRF_TRUSTED_ORIGINS = ["https://airbnbzelon.xyz"]  
@@ -216,8 +217,8 @@ else:
 CORS_ALLOW_CREDENTIALS = True
 GH_SECRET = env("GH_SECRET")
 
-CF_ID=env("CF_ID")
-CF_TOKEN=env("CF_TOKEN")
+CF_ID = env("CF_ID")
+CF_TOKEN = env("CF_TOKEN")
 
 
 if not DEBUG:
