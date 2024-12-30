@@ -37,7 +37,10 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = "RENDER" not in os.environ
 
-ALLOWED_HOSTS = ["localhost","backend.airbnbzelon.xyz",]
+ALLOWED_HOSTS = [
+    "localhost",
+    "backend.airbnbzelon.xyz",
+]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
