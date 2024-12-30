@@ -95,7 +95,7 @@ class ChangeProfile(APIView):
             user.avatar = new_avatar
             user.name = new_name
             user.email = new_email
-            user.set_password(new_password)
+            user.password = new_password
             user.save()
             login(request, user)
             return Response(status=status.HTTP_200_OK)
