@@ -1,5 +1,5 @@
 databases:
-  - name: airbnbclone
+  - name: airbnbclone-db
     plan: free
     databaseName: airbnbclone
     user: airbnbclone
@@ -8,7 +8,7 @@ databases:
 services:
   - type: web
     plan: free
-    name: airbnbclone
+    name: airbnb-back
     region: singapore
     runtime: python
     buildCommand: "./build.sh"
