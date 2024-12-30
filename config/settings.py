@@ -37,7 +37,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = "RENDER" not in os.environ
 
-ALLOWED_HOSTS = ["localhost",]
+ALLOWED_HOSTS = ["localhost","backend.airbnbzelon.xyz",]
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
@@ -206,8 +206,8 @@ if DEBUG:
     CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:3000"] 
     CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000"]  
 else:
-    CORS_ALLOWED_ORIGINS = ["https://airbnb-front-cqux.onrender.com"] 
-    CSRF_TRUSTED_ORIGINS = ["https://airbnb-front-cqux.onrender.com"]  
+    CORS_ALLOWED_ORIGINS = ["https://airbnbzelon.xyz"] 
+    CSRF_TRUSTED_ORIGINS = ["https://airbnbzelon.xyz"]  
     
     
 CORS_ALLOW_CREDENTIALS = True
