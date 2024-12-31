@@ -101,6 +101,7 @@ class Rooms(APIView):
     
     
     
+    
 class RoomDetail(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
     

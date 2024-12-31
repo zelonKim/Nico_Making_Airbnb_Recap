@@ -85,16 +85,17 @@ class ChangeProfile(APIView):
     
     def put(self, request):
         user = request.user
-        new_avatar = request.data.get('avatar')
-        new_name = request.data.get('name')
         old_password = request.data.get('oldPassword')
-        new_password = request.data.get('newPassword')
-        new_email = request.data.get('email')
+        new_avatar = request.data.get('avatar')
+        new_gender = request.data.get('gender')
+        new_language = request.data.get('language')
+        new_currency = request.data.get('currency')
         
         if user.check_password(old_password):
             user.avatar = new_avatar
-            user.name = new_name
-            user.email = new_email
+            user.gender = new_gender
+            user.language = new_language
+            user.currency = new_currency
             user.save()
             login(request, user)
             return Response(status=status.HTTP_200_OK)

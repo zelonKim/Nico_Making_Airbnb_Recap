@@ -22,7 +22,7 @@ class RoomListSerializer(ModelSerializer):
     
     class Meta:
         model = Room
-        fields = ("pk", "name", "country", "city", "price", "rating", "is_owner", "photos")
+        fields = ("pk", "name", "country", "city", "price", "rating", "is_owner", "photos", )
         
     def get_rating(self, room):
         return room.rating()
@@ -49,7 +49,7 @@ class RoomDetailSerializer(ModelSerializer):
     
     class Meta:
         model = Room
-        fields = "__all__"
+        fields ="__all__"
         # depth = 1  # 모든 참조하는 모델에 대한 모든 필드 데이터를 확장하여 가져옴.
     
     def get_rating(self, room):
