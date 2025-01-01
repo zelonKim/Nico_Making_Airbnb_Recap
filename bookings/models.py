@@ -14,7 +14,7 @@ class Booking(CommonModel):
     check_in = models.DateField(null=True, blank=True)
     check_out = models.DateField(null=True, blank=True)
     experience_time = models.DateTimeField(null=True, blank=True)
-    guests = models.PositiveIntegerField()
+    guests = models.PositiveIntegerField(null=True, blank=True)
     
     def __str__(self) -> str:
         return f"{self.kind.title()} booking for: {self.user}"

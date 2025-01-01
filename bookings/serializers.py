@@ -8,7 +8,7 @@ class CreateRoomBookingSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Booking
-        fields = ("check_in", "check_out", "guests")
+        fields = ("check_in", "check_out")
 
     def validate_check_in(self, value):
         now = timezone.localtime(timezone.now()).date()
@@ -42,4 +42,4 @@ class CreateRoomBookingSerializer(serializers.ModelSerializer):
 class PublicBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        fields = ("pk", "room", "user", "kind", "check_in", "check_out", "experience_time", "guests")
+        fields = ("pk", "room", "user", "kind", "check_in", "check_out")

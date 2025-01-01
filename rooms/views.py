@@ -274,10 +274,15 @@ class RoomBookings(APIView):
     
     
     def post(self, request, pk):
+        check_in = request.data.get("checkIn")
+        check_out = request.data.get("checkOut")
         room = self.get_object(pk)
+        
         modelObj_booking = CreateRoomBookingSerializer(data=request.data, context={"room":room})
         if modelObj_booking.is_valid():
             created_booking = modelObj_booking.save(
+                check_in = check_in,
+                check_out = check_out,
                 room = room,
                 user = request.user,
                 kind = Booking.BookingKindChoices.ROOM
@@ -288,6 +293,8 @@ class RoomBookings(APIView):
     
     
     
+    
+    
 class RoomBookingCheck(APIView):
     def get_object(self, pk):
         try:
@@ -295,7 +302,6 @@ class RoomBookingCheck(APIView):
         except:
             raise NotFound
         
-
     def get(self, request, pk):
         room = self.get_object(pk)
         check_out = request.query_params.get('check_out')
@@ -312,5 +318,3 @@ class RoomBookingCheck(APIView):
         return Response({'ok':True})
     
 
-def make_error(request):
-    division_by_zero = 1 / 0
